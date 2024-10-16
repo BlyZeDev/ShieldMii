@@ -6,16 +6,16 @@
 #include <citro2d.h>
 #include <citro3d.h>
 
+#include "define.h"
 #include "input.h"
-
-#define TOP_SCREEN_WIDTH  400
-#define BOTTOM_SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
+#include "fs.h"
 
 void init()
 {
     osSetSpeedupEnable(false); // Set to true when releasing
 
+    initFs();
+    acInit();
     hidInit();
 
     C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
@@ -29,15 +29,35 @@ void close()
     C3D_Fini();
 
     hidExit();
+    acExit();
+    exitFs();
 }
 
 int main(int argc, char** argv)
 {
     init();
 
+    writeError("This is a test error");
+
+    close();
+    return 0;
+
+    gfxInit(GSP_RGBA8_OES, GSP_RGBA8_OES, false);
+
     while (aptMainLoop())
     {
         updateInput();
+
+        if (kDown & KEY_START) break;
+    }
+
+    gfxExit();
+
+    while (aptMainLoop())
+    {
+        updateInput();
+
+        if (kDown & KEY_START) break;
     }
 
     close();
