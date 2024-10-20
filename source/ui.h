@@ -1,7 +1,10 @@
 #ifndef UI_H
 #define UI_H
 
-void initCitro();
-void exitCitro();
+void initUI();
+void drawWelcomeScreen();
+void initGrid(circle* circles);
+void drawGrid(circle* circles);
+void exitUI();
 
 #endif

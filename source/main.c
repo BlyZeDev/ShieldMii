@@ -7,6 +7,7 @@
 #include <citro3d.h>
 
 #include "define.h"
+#include "system.h"
 #include "util.h"
 #include "input.h"
 #include "fs.h"
@@ -21,14 +22,16 @@ void init()
 
     acInit();
     hidInit();
+    ptmuInit();
 
-    initCitro();
+    initUI();
 }
 
 void close()
 {
-    exitCitro();
+    exitUI();
 
+    ptmuExit();
     hidExit();
     acExit();
 
@@ -40,15 +43,19 @@ int main(int argc, char** argv)
 {
     init();
 
+    C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+    drawWelcomeScreen();
+    C3D_FrameEnd(0);
+
+    miiData mii = selectMii();
+
     while (aptMainLoop())
     {
         updateInput();
 
         if (kDown & KEY_START) break;
 
-        C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-
-        C3D_FrameEnd(0);
+        
     }
 
     close();
