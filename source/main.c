@@ -20,6 +20,7 @@ void init()
     romfsInit();
     initFs();
 
+    mcuHwcInit();
     acInit();
     hidInit();
     ptmuInit();
@@ -34,6 +35,7 @@ void close()
     ptmuExit();
     hidExit();
     acExit();
+    mcuHwcInit();
 
     exitFs();
     romfsInit();
@@ -43,19 +45,37 @@ int main(int argc, char** argv)
 {
     init();
 
-    C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+    startFrame();
     drawWelcomeScreen();
-    C3D_FrameEnd(0);
+    drawBattery(getBatteryPercentage(), getChargingState());
+    endFrame();
 
-    miiData mii = selectMii();
-
+    appState state = APPSTATE_WELCOME;
+    menuState menuState = 0;
     while (aptMainLoop())
     {
         updateInput();
 
         if (kDown & KEY_START) break;
 
-        
+        startFrame();
+
+        switch (state)
+        {
+            case APPSTATE_WELCOME:
+                if (!(menuState & MENUSTATE_SELECTMII))
+                {
+                    menuState ^= MENUSTATE_SELECTMII;
+                    miiData mii = selectMii();
+                }
+
+                drawWelcomeScreen();
+                break;
+        }
+
+        drawBattery(getBatteryPercentage(), getChargingState());
+
+        endFrame();
     }
 
     close();

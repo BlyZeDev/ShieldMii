@@ -22,6 +22,7 @@ miiData selectMii()
     if (!miiSelectorChecksumIsValid(&msRet)) svcBreak(USERBREAK_PANIC);
 
     miiData mii;
+    mii.id = msRet.mii.mii_id;
     miiSelectorReturnGetName(&msRet, mii.name, ARRAY_LENGTH(mii.name));
     mii.birthday_day = msRet.mii.mii_details.bday_day;
     mii.birthday_month = msRet.mii.mii_details.bday_month;
@@ -29,11 +30,12 @@ miiData selectMii()
     return mii;
 }
 
-u8 getBatteryLevel()
+u8 getBatteryPercentage()
 {
-    u8 level;
-    PTMU_GetBatteryLevel(&level);
-    return level;
+    u8 data[2];
+    Result res = MCUHWC_ReadRegister(0xB, data, 2);
+
+    return R_SUCCEEDED(res) ? (u8)roundf(data[0] + data[1] / 256.0f) : 0;
 }
 
 bool getChargingState()

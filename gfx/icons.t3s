@@ -1,2 +1,7 @@
 --atlas -f rgba8888 -z none
 logo.png
+battery_full.png
+battery_mid.png
+battery_low.png
+battery_crit.png
+battery_charging.png

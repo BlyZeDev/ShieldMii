@@ -2,7 +2,7 @@
 #define SYSTEM_H
 
 miiData selectMii();
-u8 getBatteryLevel();
+u8 getBatteryPercentage();
 bool getChargingState();
 
 #endif

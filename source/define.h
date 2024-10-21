@@ -5,7 +5,10 @@
 #define BOTTOM_SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
-#define ERASE 0xFF000000
+#define SCREEN_PADDING 2
+#define CONTROL_PADDING SCREEN_PADDING * 2
+
+#define ERASER 0xFF000000
 #define PRIMARY 0xFF442200
 #define SECONDARY 0xFFCCA800
 #define INACTIVE 0xFFD0D0D0
@@ -18,6 +21,16 @@
 #define CIRCLE_SIZE 46 / GRID_SIZE
 
 #define ARRAY_LENGTH(x) (sizeof(x) / sizeof((x)[0]))
+
+typedef enum
+{
+    APPSTATE_WELCOME = 1
+} appState;
+
+typedef enum
+{
+    MENUSTATE_SELECTMII = 1
+} menuState;
 
 typedef struct
 {
@@ -34,6 +47,7 @@ typedef struct
 
 typedef struct
 {
+    u32 id;
     char name[30];
     u8 birthday_day;
     u8 birthday_month;

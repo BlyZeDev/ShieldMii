@@ -9,6 +9,8 @@
 #include "define.h"
 #include "util.h"
 
+#define TXT_BUF_SIZE 4096u
+
 static C3D_RenderTarget* topPtr = NULL;
 static C3D_RenderTarget* botPtr = NULL;
 
@@ -31,17 +33,32 @@ void initUI()
     if (!icons) svcBreak(USERBREAK_PANIC);
 }
 
-void clearTarget(C3D_RenderTarget* target)
+void startFrame()
 {
-    C2D_TargetClear(target, ERASE);
+    C2D_TextBufClear(dynTxtBuf);
+    C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+}
+
+static void clearTarget(C3D_RenderTarget* target)
+{
+    C2D_TargetClear(target, ERASER);
+}
+
+static void drawText(char* buffer, u32 flags, float x, float y, float scaleX, float scaleY, u32 color)
+{
+    C2D_Text text;
+    C2D_TextParse(&text, dynTxtBuf, buffer);
+    C2D_TextOptimize(&text);
+    C2D_DrawText(&text, flags | C2D_WithColor, x, y, 0, scaleX, scaleY, color);
 }
 
 void drawWelcomeScreen()
 {
+    clearTarget(botPtr);
     clearTarget(topPtr);
     C2D_SceneBegin(topPtr);
-
-    C2D_DrawRectSolid(0, 0, 0, TOP_SCREEN_WIDTH, SCREEN_HEIGHT, INACTIVE);
+    
+    C2D_DrawRectSolid(0, 0, 0, TOP_SCREEN_WIDTH, SCREEN_HEIGHT, PRIMARY);
 
     C2D_Image logo = C2D_SpriteSheetGetImage(icons, 0);
     C2D_DrawImageAt(logo,
@@ -74,8 +91,30 @@ void drawGrid(circle* circles)
     }
 }
 
+void drawBattery(u8 percentage, bool isCharging)
+{
+    C2D_SceneBegin(topPtr);
+
+    C2D_Image icon = C2D_SpriteSheetGetImage(icons, getBatteryIndex(percentage, isCharging));
+
+    const float xPos = TOP_SCREEN_WIDTH - icon.subtex->width - SCREEN_PADDING;
+
+    C2D_DrawImageAt(icon, xPos, SCREEN_PADDING, 0, NULL, 1.0f, 1.0f);
+
+    char buffer[5];
+    snprintf(buffer, 5, "%u%%", percentage);
+    drawText(buffer, C2D_AlignRight, xPos - CONTROL_PADDING, SCREEN_PADDING, 0.5f, 0.5f, TEXT);
+}
+
+void endFrame()
+{
+    C2D_Flush();
+    C3D_FrameEnd(0);
+}
+
 void exitUI()
 {
+    C2D_TextBufDelete(dynTxtBuf);
     C2D_SpriteSheetFree(icons);
 
     C2D_Fini();
