@@ -17,6 +17,19 @@ static C3D_RenderTarget* botPtr = NULL;
 static C2D_TextBuf dynTxtBuf;
 static C2D_SpriteSheet icons;
 
+static void clearTarget(C3D_RenderTarget* target)
+{
+    C2D_TargetClear(target, ERASER);
+}
+
+static void drawText(char* buffer, u32 flags, float x, float y, float scaleX, float scaleY, u32 color)
+{
+    C2D_Text text;
+    C2D_TextParse(&text, dynTxtBuf, buffer);
+    C2D_TextOptimize(&text);
+    C2D_DrawText(&text, flags | C2D_WithColor, x, y, 0, scaleX, scaleY, color);
+}
+
 void initUI()
 {
     gfxInitDefault();
@@ -37,19 +50,6 @@ void startFrame()
 {
     C2D_TextBufClear(dynTxtBuf);
     C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-}
-
-static void clearTarget(C3D_RenderTarget* target)
-{
-    C2D_TargetClear(target, ERASER);
-}
-
-static void drawText(char* buffer, u32 flags, float x, float y, float scaleX, float scaleY, u32 color)
-{
-    C2D_Text text;
-    C2D_TextParse(&text, dynTxtBuf, buffer);
-    C2D_TextOptimize(&text);
-    C2D_DrawText(&text, flags | C2D_WithColor, x, y, 0, scaleX, scaleY, color);
 }
 
 void drawWelcomeScreen()

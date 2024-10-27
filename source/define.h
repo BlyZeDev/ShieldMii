@@ -20,6 +20,9 @@
 #define GRID_POINTS GRID_SIZE * GRID_SIZE
 #define CIRCLE_SIZE 46 / GRID_SIZE
 
+#define MAX_PASSNAME_LENGTH 32
+#define MAX_PASSWORD_LENGTH 128
+
 #define ARRAY_LENGTH(x) (sizeof(x) / sizeof((x)[0]))
 
 typedef enum
@@ -52,5 +55,19 @@ typedef struct
     u8 birthday_day;
     u8 birthday_month;
 } miiData;
+
+typedef struct
+{
+    char name[MAX_PASSNAME_LENGTH];
+    char password[MAX_PASSWORD_LENGTH];
+} entry;
+
+typedef struct
+{
+    u8 passcode[GRID_POINTS];
+    u8 passcodeLength;
+    u16 entryCount;
+    entry* entries;
+} storage;
 
 #endif
