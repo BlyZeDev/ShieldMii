@@ -18,7 +18,7 @@
 
 #define GRID_SIZE 4
 #define GRID_POINTS GRID_SIZE * GRID_SIZE
-#define CIRCLE_SIZE 46 / GRID_SIZE
+#define CIRCLE_SIZE 100 / GRID_SIZE
 
 #define MAX_PASSNAME_LENGTH 32
 #define MAX_PASSWORD_LENGTH 128
@@ -27,18 +27,21 @@
 
 typedef enum
 {
-    APPSTATE_WELCOME = 1
+    APPSTATE_WELCOME = 1,
+    APPSTATE_ENTERPASSCODE
 } appState;
 
 typedef enum
 {
-    MENUSTATE_SELECTMII = 1
+    MENUSTATE_SELECTMII = 1 << 0,
+    MENUSTATE_INITPASSCODE = 1 << 1
 } menuState;
 
 typedef struct
 {
     float x;
     float y;
+    bool isSelected;
 } circle;
 
 typedef struct
@@ -64,8 +67,7 @@ typedef struct
 
 typedef struct
 {
-    u8 passcode[GRID_POINTS];
-    u8 passcodeLength;
+    u8 passcodeHash[64];
     u16 entryCount;
     entry* entries;
 } storage;

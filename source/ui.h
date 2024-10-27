@@ -4,9 +4,8 @@
 void initUI();
 void startFrame();
 void drawWelcomeScreen();
-void initGrid(circle* circles);
-void drawGrid(circle* circles);
-void drawBattery(u8 percentage, bool isCharging);
+void drawGrid(const circle* circles);
+void drawBattery(const u8 percentage, const bool isCharging);
 void endFrame();
 void exitUI();
 

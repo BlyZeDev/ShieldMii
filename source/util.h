@@ -1,7 +1,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-bool isTouched(touchPosition touch, float x, float y, float area);
-size_t getBatteryIndex(u8 percentage, bool isCharging);
+void initGrid(circle* circles);
+bool isTouched(const touchPosition touch, const float x, const float y, const float area);
+size_t getBatteryIndex(const u8 percentage, const bool isCharging);
+void hash(const u8* input, const size_t length, u8* hashBuf);
 
 #endif

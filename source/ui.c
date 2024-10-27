@@ -22,7 +22,7 @@ static void clearTarget(C3D_RenderTarget* target)
     C2D_TargetClear(target, ERASER);
 }
 
-static void drawText(char* buffer, u32 flags, float x, float y, float scaleX, float scaleY, u32 color)
+static void drawText(const char* buffer, const u32 flags, const float x, const float y, const float scaleX, const float scaleY, const u32 color)
 {
     C2D_Text text;
     C2D_TextParse(&text, dynTxtBuf, buffer);
@@ -50,12 +50,13 @@ void startFrame()
 {
     C2D_TextBufClear(dynTxtBuf);
     C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+
+    clearTarget(topPtr);
+    clearTarget(botPtr);
 }
 
 void drawWelcomeScreen()
 {
-    clearTarget(botPtr);
-    clearTarget(topPtr);
     C2D_SceneBegin(topPtr);
     
     C2D_DrawRectSolid(0, 0, 0, TOP_SCREEN_WIDTH, SCREEN_HEIGHT, PRIMARY);
@@ -67,31 +68,20 @@ void drawWelcomeScreen()
         0, NULL, 1.0f, 1.0f);
 }
 
-void initGrid(circle* circles)
+void drawGrid(const circle* circles)
 {
-    const float width = BOTTOM_SCREEN_WIDTH / GRID_SIZE;
-    const float height = SCREEN_HEIGHT / GRID_SIZE;
-
-    for (size_t i = 0; i < GRID_POINTS; i++)
-    {
-        circles[i].x = width * (i % GRID_SIZE) + width / 2;
-        circles[i].y = height * (i / GRID_SIZE) + height / 2;
-    }
-}
-
-void drawGrid(circle* circles)
-{
-    clearTarget(botPtr);
     C2D_SceneBegin(botPtr);
 
+    circle cur;
     for (size_t i = 0; i < GRID_POINTS; i++)
     {
-        C2D_DrawCircleSolid(circles[i].x, circles[i].y, 0, CIRCLE_SIZE, SECONDARY);
-        C2D_DrawCircleSolid(circles[i].x, circles[i].y, 0, CIRCLE_SIZE * 0.75f, TEXT);
+        cur = circles[i];
+        C2D_DrawCircleSolid(cur.x, cur.y, 0, CIRCLE_SIZE, cur.isSelected ? SUCCESS : ERROR);
+        C2D_DrawCircleSolid(cur.x, cur.y, 0, CIRCLE_SIZE * 0.75f, TEXT);
     }
 }
 
-void drawBattery(u8 percentage, bool isCharging)
+void drawBattery(const u8 percentage, const bool isCharging)
 {
     C2D_SceneBegin(topPtr);
 
