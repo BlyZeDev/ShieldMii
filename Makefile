@@ -37,7 +37,7 @@ APP_AUTHOR          :=	BlyZe
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source
+SOURCES		:=	source source/include
 DATA		:=	data
 INCLUDES	:=	include
 GRAPHICS	:=	gfx

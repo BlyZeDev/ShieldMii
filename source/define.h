@@ -23,12 +23,15 @@
 #define MAX_PASSNAME_LENGTH 32
 #define MAX_PASSWORD_LENGTH 128
 
+#define PASSCODE_HASH_LENGTH 200
+
 #define ARRAY_LENGTH(x) (sizeof(x) / sizeof((x)[0]))
 
 typedef enum
 {
     APPSTATE_WELCOME = 1,
-    APPSTATE_ENTERPASSCODE
+    APPSTATE_ENTERPASSCODE,
+    APPSTATE_MAIN
 } appState;
 
 typedef enum
@@ -67,7 +70,7 @@ typedef struct
 
 typedef struct
 {
-    u8 passcodeHash[64];
+    u8 passcodeHash[PASSCODE_HASH_LENGTH];
     u16 entryCount;
     entry* entries;
 } storage;

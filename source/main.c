@@ -50,12 +50,13 @@ int main(int argc, char** argv)
     drawBattery(getBatteryPercentage(), getChargingState());
     endFrame();
 
-    storage curData;
-    gridCode code;
+    storage curData = {0};
+    gridCode code = {0};
 
     appState state = APPSTATE_WELCOME;
     menuState menuState = 0;
 
+    miiData selectedMii;
     while (aptMainLoop())
     {
         updateInput();
@@ -70,12 +71,12 @@ int main(int argc, char** argv)
                 if (!(menuState & MENUSTATE_SELECTMII))
                 {
                     menuState ^= MENUSTATE_SELECTMII;
-                    miiData mii = selectMii();
+                    selectedMii = selectMii();
 
                     state = APPSTATE_ENTERPASSCODE;
 
-                    bool exists = readMiiFile(mii.id, &curData);
-                    if (exists) menuState |= MENUSTATE_INITPASSCODE;
+                    bool exists = readMiiFile(selectedMii.id, &curData);
+                    if (!exists) menuState |= MENUSTATE_INITPASSCODE;
 
                     initGrid(code.circles);
                 }
@@ -94,17 +95,41 @@ int main(int argc, char** argv)
                         if (curPtr->isSelected) continue;
                         if (isTouched(touchPos, curPtr->x, curPtr->y, CIRCLE_SIZE))
                         {
+                            code.code[code.codeLength] = i;
+                            code.codeLength++;
                             curPtr->isSelected = true;
                             break;
                         }
                     }
                 }
 
-                if (menuState & MENUSTATE_INITPASSCODE)
+                if (kDown & KEY_A)
                 {
+                    u8 hashed[200];
+                    hash(code.code, code.codeLength, hashed);
 
+                    if (menuState & MENUSTATE_INITPASSCODE)
+                    {
+                        memcpy(curData.passcodeHash, hashed, sizeof(curData.passcodeHash));
+                        writeMiiFile(selectedMii.id, &curData);
+                        state = APPSTATE_MAIN;
+                    }
+                    else
+                    {
+                        if (memcmp(curData.passcodeHash, hashed, sizeof(curData.passcodeHash)) == 0)
+                        {
+                            state = APPSTATE_MAIN;
+                        }
+                        else
+                        {
+                            memset(&code, 0, sizeof(code));
+                            initGrid(code.circles);
+                        }
+                    }
                 }
                 break;
+
+            case APPSTATE_MAIN: return 0;
         }
 
         drawBattery(getBatteryPercentage(), getChargingState());

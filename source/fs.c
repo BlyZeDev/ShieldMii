@@ -66,19 +66,22 @@ bool readMiiFile(const u32 id, storage* data)
 
     u32 bytesRead;
     u64 offset = 0;
-    FSFILE_Read(fileHandle, &bytesRead, offset, &data->passcodeHash, sizeof(u64));
-    offset += sizeof(u64);
+    FSFILE_Read(fileHandle, &bytesRead, offset, &data->passcodeHash, PASSCODE_HASH_LENGTH * sizeof(u8));
+    offset += PASSCODE_HASH_LENGTH * sizeof(u8);
     FSFILE_Read(fileHandle, &bytesRead, offset, &data->entryCount, sizeof(u16));
     offset += sizeof(u16);
 
-    data->entries = (entry*)malloc(data->entryCount * sizeof(entry));
-
-    for (size_t i = 0; i < data->entryCount; i++)
+    if (data->entryCount > 0)
     {
-        FSFILE_Read(fileHandle, &bytesRead, offset, data->entries[i].name, MAX_PASSNAME_LENGTH * sizeof(char));
-        offset += MAX_PASSNAME_LENGTH * sizeof(char);
-        FSFILE_Read(fileHandle, &bytesRead, offset, data->entries[i].password, MAX_PASSWORD_LENGTH * sizeof(char));
-        offset += MAX_PASSWORD_LENGTH * sizeof(char);
+        data->entries = (entry*)malloc(data->entryCount * sizeof(entry));
+
+        for (size_t i = 0; i < data->entryCount; i++)
+        {
+            FSFILE_Read(fileHandle, &bytesRead, offset, data->entries[i].name, MAX_PASSNAME_LENGTH * sizeof(char));
+            offset += MAX_PASSNAME_LENGTH * sizeof(char);
+            FSFILE_Read(fileHandle, &bytesRead, offset, data->entries[i].password, MAX_PASSWORD_LENGTH * sizeof(char));
+            offset += MAX_PASSWORD_LENGTH * sizeof(char);
+        }
     }
 
     FSFILE_Close(fileHandle);
@@ -98,8 +101,8 @@ bool writeMiiFile(const u32 id, const storage* data)
 
     u32 bytesWritten;
     u64 offset = 0;
-    FSFILE_Write(fileHandle, &bytesWritten, offset, &data->passcodeHash, sizeof(u64), FS_WRITE_FLUSH);
-    offset += sizeof(u64);
+    FSFILE_Write(fileHandle, &bytesWritten, offset, &data->passcodeHash, PASSCODE_HASH_LENGTH * sizeof(u8), FS_WRITE_FLUSH);
+    offset += PASSCODE_HASH_LENGTH * sizeof(u8);
     FSFILE_Write(fileHandle, &bytesWritten, offset, &data->entryCount, sizeof(u16), FS_WRITE_FLUSH);
     offset += sizeof(u16);
 
