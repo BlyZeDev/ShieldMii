@@ -23,7 +23,7 @@
 #define MAX_PASSNAME_LENGTH 32
 #define MAX_PASSWORD_LENGTH 128
 
-#define PASSCODE_HASH_LENGTH 200
+#define PASSCODE_HASH_LENGTH 64
 
 #define ARRAY_LENGTH(x) (sizeof(x) / sizeof((x)[0]))
 

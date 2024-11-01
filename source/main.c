@@ -105,7 +105,7 @@ int main(int argc, char** argv)
 
                 if (kDown & KEY_A)
                 {
-                    u8 hashed[200];
+                    u8 hashed[PASSCODE_HASH_LENGTH];
                     hash(code.code, code.codeLength, hashed);
 
                     if (menuState & MENUSTATE_INITPASSCODE)
