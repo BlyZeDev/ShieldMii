@@ -18,7 +18,9 @@
 
 #define GRID_SIZE 4
 #define GRID_POINTS GRID_SIZE * GRID_SIZE
-#define CIRCLE_SIZE 100 / GRID_SIZE
+#define CIRCLE_SIZE 80 / GRID_SIZE
+
+#define MIN_PASSCODE_LENGTH 4
 
 #define MAX_PASSNAME_LENGTH 32
 #define MAX_PASSWORD_LENGTH 128
@@ -44,6 +46,11 @@ typedef struct
 {
     float x;
     float y;
+} point;
+
+typedef struct
+{
+    point coord;
     bool isSelected;
 } circle;
 

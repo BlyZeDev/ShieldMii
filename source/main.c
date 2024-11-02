@@ -83,7 +83,7 @@ int main(int argc, char** argv)
                 break;
 
             case APPSTATE_ENTERPASSCODE:
-                drawGrid(code.circles);
+                drawPasscodeEntry(code.circles);
 
                 if (kDown & KEY_TOUCH)
                 {
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
                         curPtr = &code.circles[i];
 
                         if (curPtr->isSelected) continue;
-                        if (isTouched(touchPos, curPtr->x, curPtr->y, CIRCLE_SIZE))
+                        if (isTouched(touchPos, curPtr->coord.x, curPtr->coord.y, CIRCLE_SIZE))
                         {
                             code.code[code.codeLength] = i;
                             code.codeLength++;
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
                     }
                 }
 
-                if (kDown & KEY_A)
+                if ((kDown & KEY_A) && code.codeLength >= MIN_PASSCODE_LENGTH) //Show minimum passcode length with error modal
                 {
                     u8 hashed[PASSCODE_HASH_LENGTH];
                     hash(code.code, code.codeLength, hashed);

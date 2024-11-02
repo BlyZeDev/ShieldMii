@@ -22,12 +22,16 @@ static void clearTarget(C3D_RenderTarget* target)
     C2D_TargetClear(target, ERASER);
 }
 
-static void drawText(const char* buffer, const u32 flags, const float x, const float y, const float scaleX, const float scaleY, const u32 color)
+static point drawText(const char* buffer, const u32 flags, const float x, const float y, const float scaleX, const float scaleY, const u32 color)
 {
     C2D_Text text;
     C2D_TextParse(&text, dynTxtBuf, buffer);
     C2D_TextOptimize(&text);
     C2D_DrawText(&text, flags | C2D_WithColor, x, y, 0, scaleX, scaleY, color);
+
+    point size;
+    C2D_TextGetDimensions(&text, scaleX, scaleY, &size.x, &size.y);
+    return size;
 }
 
 void initUI()
@@ -68,7 +72,7 @@ void drawWelcomeScreen()
         0, NULL, 1.0f, 1.0f);
 }
 
-void drawGrid(const circle* circles)
+void drawPasscodeEntry(const circle* circles)
 {
     C2D_SceneBegin(botPtr);
 
@@ -76,9 +80,14 @@ void drawGrid(const circle* circles)
     for (size_t i = 0; i < GRID_POINTS; i++)
     {
         cur = circles[i];
-        C2D_DrawCircleSolid(cur.x, cur.y, 0, CIRCLE_SIZE, cur.isSelected ? SUCCESS : ERROR);
-        C2D_DrawCircleSolid(cur.x, cur.y, 0, CIRCLE_SIZE * 0.75f, TEXT);
+        C2D_DrawCircleSolid(cur.coord.x, cur.coord.y, 0, CIRCLE_SIZE, cur.isSelected ? SUCCESS : ERROR);
+        C2D_DrawCircleSolid(cur.coord.x, cur.coord.y, 0, CIRCLE_SIZE * 0.75f, TEXT);
     }
+
+    C2D_SceneBegin(topPtr);
+
+    point lastText = drawText("\uE000 Confirm", C2D_AlignCenter, TOP_SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3, 1.0f, 1.0f, TEXT);
+    lastText = drawText("\uE001 Undo", C2D_AlignCenter, TOP_SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3 + lastText.y + CONTROL_PADDING, 1.0f, 1.0f, TEXT);
 }
 
 void drawBattery(const u8 percentage, const bool isCharging)

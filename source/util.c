@@ -16,8 +16,8 @@ void initGrid(circle* circles)
 
     for (size_t i = 0; i < GRID_POINTS; i++)
     {
-        circles[i].x = width * (i % GRID_SIZE) + width / 2;
-        circles[i].y = height * (i / GRID_SIZE) + height / 2;
+        circles[i].coord.x = width * (i % GRID_SIZE) + width / 2;
+        circles[i].coord.y = height * (i / GRID_SIZE) + height / 2;
         circles[i].isSelected = false;
     }
 }
