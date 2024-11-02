@@ -1,7 +1,7 @@
 #ifndef UI_H
 #define UI_H
 
-void initUI();
+void initUI(bool setWide);
 void startFrame();
 void drawWelcomeScreen();
 void drawPasscodeEntry(const circle* circles);

@@ -21,11 +21,12 @@ void init()
     initFs();
 
     mcuHwcInit();
+    cfguInit();
     acInit();
     hidInit();
     ptmuInit();
 
-    initUI();
+    initUI(getSystemModel() != CFG_MODEL_2DS);
 }
 
 void close()
@@ -35,6 +36,7 @@ void close()
     ptmuExit();
     hidExit();
     acExit();
+    cfguExit();
     mcuHwcInit();
 
     exitFs();
@@ -53,8 +55,8 @@ int main(int argc, char** argv)
     storage curData = {0};
     gridCode code = {0};
 
-    appState state = APPSTATE_WELCOME;
-    menuState menuState = 0;
+    AppState state = APPSTATE_WELCOME;
+    MenuState menuState = MENUSTATE_SELECTMII;
 
     miiData selectedMii;
     while (aptMainLoop())
@@ -68,7 +70,7 @@ int main(int argc, char** argv)
         switch (state)
         {
             case APPSTATE_WELCOME:
-                if (!(menuState & MENUSTATE_SELECTMII))
+                if (menuState & MENUSTATE_SELECTMII)
                 {
                     menuState ^= MENUSTATE_SELECTMII;
                     selectedMii = selectMii();
@@ -87,23 +89,32 @@ int main(int argc, char** argv)
 
                 if (kDown & KEY_TOUCH)
                 {
-                    circle* curPtr;
+                    circle* curCirclePtr;
                     for (size_t i = 0; i < GRID_POINTS; i++)
                     {
-                        curPtr = &code.circles[i];
+                        curCirclePtr = &code.circles[i];
 
-                        if (curPtr->isSelected) continue;
-                        if (isTouched(touchPos, curPtr->coord.x, curPtr->coord.y, CIRCLE_SIZE))
+                        if (curCirclePtr->isSelected) continue;
+                        if (isTouched(touchPos, curCirclePtr->coord.x, curCirclePtr->coord.y, CIRCLE_SIZE))
                         {
                             code.code[code.codeLength] = i;
                             code.codeLength++;
-                            curPtr->isSelected = true;
+                            curCirclePtr->isSelected = true;
                             break;
                         }
                     }
                 }
 
-                if ((kDown & KEY_A) && code.codeLength >= MIN_PASSCODE_LENGTH) //Show minimum passcode length with error modal
+                if (kDown & KEY_B)
+                {
+                    if (code.codeLength > 0)
+                    {
+                        code.codeLength--;
+                        code.circles[code.code[code.codeLength]].isSelected = false;
+                    }
+                }
+
+                if (kDown & KEY_A)
                 {
                     u8 hashed[PASSCODE_HASH_LENGTH];
                     hash(code.code, code.codeLength, hashed);
@@ -112,6 +123,7 @@ int main(int argc, char** argv)
                     {
                         memcpy(curData.passcodeHash, hashed, sizeof(curData.passcodeHash));
                         writeMiiFile(selectedMii.id, &curData);
+                        menuState ^= MENUSTATE_INITPASSCODE;
                         state = APPSTATE_MAIN;
                     }
                     else

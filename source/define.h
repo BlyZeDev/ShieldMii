@@ -1,7 +1,7 @@
 #ifndef DEFINE_H
 #define DEFINE_H
 
-#define TOP_SCREEN_WIDTH  400
+#define TOP_SCREEN_WIDTH 400
 #define BOTTOM_SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
@@ -31,16 +31,23 @@
 
 typedef enum
 {
+    ERROR_CODE_NONE,
+    ERROR_CODE_PASSCODE_TOO_SHORT,
+    ERROR_CODE_PASSCODE_WRONG
+} ErrorCode;
+
+typedef enum
+{
     APPSTATE_WELCOME = 1,
     APPSTATE_ENTERPASSCODE,
     APPSTATE_MAIN
-} appState;
+} AppState;
 
 typedef enum
 {
     MENUSTATE_SELECTMII = 1 << 0,
     MENUSTATE_INITPASSCODE = 1 << 1
-} menuState;
+} MenuState;
 
 typedef struct
 {

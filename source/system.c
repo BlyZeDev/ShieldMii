@@ -8,6 +8,22 @@
 
 #include "define.h"
 
+CFG_SystemModel getSystemModel()
+{
+    u8 model;
+    CFGU_GetSystemModel(&model);
+
+    return model;
+}
+
+CFG_Language getSystemLang()
+{
+    u8 language;
+    CFGU_GetSystemLanguage(&language);
+
+    return language;
+}
+
 miiData selectMii()
 {
     MiiSelectorConf msConf;
@@ -28,6 +44,15 @@ miiData selectMii()
     mii.birthday_month = msRet.mii.mii_details.bday_month;
 
     return mii;
+}
+
+void showError(const char* buffer, ErrorCode code)
+{
+    errorConf conf;
+    errorInit(&conf, ERROR_TEXT, getSystemLang()); 
+    errorCode(&conf, code);
+    errorText(&conf, buffer);
+    errorDisp(&conf);
 }
 
 u8 getBatteryPercentage()

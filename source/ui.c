@@ -34,12 +34,14 @@ static point drawText(const char* buffer, const u32 flags, const float x, const 
     return size;
 }
 
-void initUI()
+void initUI(bool setWide)
 {
     gfxInitDefault();
     C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
     C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
     C2D_Prepare();
+
+    gfxSetWide(setWide);
 
     topPtr = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
     botPtr = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
