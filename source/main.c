@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     storage curData = {0};
     gridCode code = {0};
 
-    AppState state = APPSTATE_WELCOME;
+    AppState appState = APPSTATE_WELCOME;
     MenuState menuState = MENUSTATE_SELECTMII;
 
     miiData selectedMii;
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 
         startFrame();
 
-        switch (state)
+        switch (appState)
         {
             case APPSTATE_WELCOME:
                 if (menuState & MENUSTATE_SELECTMII)
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
                     menuState ^= MENUSTATE_SELECTMII;
                     selectedMii = selectMii();
 
-                    state = APPSTATE_ENTERPASSCODE;
+                    appState = APPSTATE_ENTERPASSCODE;
 
                     bool exists = readMiiFile(selectedMii.id, &curData);
                     if (!exists) menuState |= MENUSTATE_INITPASSCODE;
@@ -124,13 +124,13 @@ int main(int argc, char** argv)
                         memcpy(curData.passcodeHash, hashed, sizeof(curData.passcodeHash));
                         writeMiiFile(selectedMii.id, &curData);
                         menuState ^= MENUSTATE_INITPASSCODE;
-                        state = APPSTATE_MAIN;
+                        appState = APPSTATE_MAIN;
                     }
                     else
                     {
                         if (memcmp(curData.passcodeHash, hashed, sizeof(curData.passcodeHash)) == 0)
                         {
-                            state = APPSTATE_MAIN;
+                            appState = APPSTATE_MAIN;
                         }
                         else
                         {
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 
         endFrame();
     }
-
+    
     close();
     return 0;
 }

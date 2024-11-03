@@ -7,6 +7,6 @@ extern u32 kUp;
 
 extern touchPosition touchPos;
 
-void updateInput();
+void updateInput(void);
 
 #endif

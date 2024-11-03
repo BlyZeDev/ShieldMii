@@ -8,7 +8,7 @@
 
 #include "define.h"
 
-CFG_SystemModel getSystemModel()
+CFG_SystemModel getSystemModel(void)
 {
     u8 model;
     CFGU_GetSystemModel(&model);
@@ -16,7 +16,7 @@ CFG_SystemModel getSystemModel()
     return model;
 }
 
-CFG_Language getSystemLang()
+CFG_Language getSystemLang(void)
 {
     u8 language;
     CFGU_GetSystemLanguage(&language);
@@ -24,7 +24,7 @@ CFG_Language getSystemLang()
     return language;
 }
 
-miiData selectMii()
+miiData selectMii(void)
 {
     MiiSelectorConf msConf;
     MiiSelectorReturn msRet;
@@ -49,13 +49,13 @@ miiData selectMii()
 void showError(const char* buffer, ErrorCode code)
 {
     errorConf conf;
-    errorInit(&conf, ERROR_TEXT, getSystemLang()); 
+    errorInit(&conf, ERROR_TEXT, CFG_LANGUAGE_DEFAULT);
     errorCode(&conf, code);
     errorText(&conf, buffer);
     errorDisp(&conf);
 }
 
-u8 getBatteryPercentage()
+u8 getBatteryPercentage(void)
 {
     u8 data[2];
     Result res = MCUHWC_ReadRegister(0xB, data, 2);
@@ -63,7 +63,7 @@ u8 getBatteryPercentage()
     return R_SUCCEEDED(res) ? (u8)roundf(data[0] + data[1] / 256.0f) : 0;
 }
 
-bool getChargingState()
+bool getChargingState(void)
 {
     u8 state;
     PTMU_GetBatteryChargeState(&state);

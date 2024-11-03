@@ -12,7 +12,7 @@ u32 kUp = 0;
 
 touchPosition touchPos;
 
-void updateInput()
+void updateInput(void)
 {
     hidScanInput();
 

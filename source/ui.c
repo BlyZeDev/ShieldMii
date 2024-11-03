@@ -52,7 +52,7 @@ void initUI(bool setWide)
     if (!icons) svcBreak(USERBREAK_PANIC);
 }
 
-void startFrame()
+void startFrame(void)
 {
     C2D_TextBufClear(dynTxtBuf);
     C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
@@ -61,7 +61,7 @@ void startFrame()
     clearTarget(botPtr);
 }
 
-void drawWelcomeScreen()
+void drawWelcomeScreen(void)
 {
     C2D_SceneBegin(topPtr);
     
@@ -107,13 +107,13 @@ void drawBattery(const u8 percentage, const bool isCharging)
     drawText(buffer, C2D_AlignRight, xPos - CONTROL_PADDING, SCREEN_PADDING, 0.5f, 0.5f, TEXT);
 }
 
-void endFrame()
+void endFrame(void)
 {
     C2D_Flush();
     C3D_FrameEnd(0);
 }
 
-void exitUI()
+void exitUI(void)
 {
     C2D_TextBufDelete(dynTxtBuf);
     C2D_SpriteSheetFree(icons);

@@ -36,7 +36,7 @@ static Result prepareMiiFileOp(Handle* handle, const u32 id, const u32 flags, co
     return FSUSER_OpenFile(handle, sdmc, fsMakePath(PATH_ASCII, path), flags, FS_ATTRIBUTE_HIDDEN);
 }
 
-void initFs()
+void initFs(void)
 {
     fsInit();
 
@@ -118,7 +118,7 @@ bool writeMiiFile(const u32 id, const storage* data)
     return true;
 }
 
-void exitFs()
+void exitFs(void)
 {
     FSUSER_CloseArchive(sdmc);
     fsExit();
