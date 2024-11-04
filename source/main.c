@@ -7,6 +7,7 @@
 #include <citro3d.h>
 
 #include "define.h"
+#include "audio.h"
 #include "system.h"
 #include "util.h"
 #include "input.h"
@@ -25,6 +26,7 @@ void init()
     acInit();
     hidInit();
     ptmuInit();
+    ndspInit();
 
     initUI(getSystemModel() != CFG_MODEL_2DS);
 }
@@ -33,12 +35,13 @@ void close()
 {
     exitUI();
 
+    ndspExit();
     ptmuExit();
     hidExit();
     acExit();
     cfguExit();
     mcuHwcInit();
-
+    
     exitFs();
     romfsInit();
 }
@@ -46,6 +49,12 @@ void close()
 int main(int argc, char** argv)
 {
     init();
+
+    bcstm* bgm = loadBcstm("romfs:/bgm.bcstm");
+    if (bgm != NULL)
+    {
+        playBcstm(bgm);
+    }
 
     startFrame();
     drawWelcomeScreen();
@@ -149,6 +158,9 @@ int main(int argc, char** argv)
         endFrame();
     }
     
+    stopBcstm(bgm);
+    freeBcstm(&bgm);
+
     close();
     return 0;
 }

@@ -27,6 +27,8 @@
 
 #define PASSCODE_HASH_LENGTH 64
 
+#define BUFFER_COUNT 8
+
 #define ARRAY_LENGTH(x) (sizeof(x) / sizeof((x)[0]))
 
 typedef enum
@@ -88,5 +90,35 @@ typedef struct
     u16 entryCount;
     entry* entries;
 } storage;
+
+typedef struct
+{
+    s8* audioBuffer;
+    size_t audioSize;
+    size_t cursor;
+    u32 lastTime;
+    bool isLittleEndian;
+    bool isLooping;
+    u32 infoOffset;
+    u32 dataOffset;
+    u8 channelCount;
+    u32 sampleRate;
+    u32 loopStart;
+    u32 loopEnd;
+    u32 numBlocks;
+    u32 blockSize;
+    u32 blockSamples;
+    u32 lastBlockSamples;
+    u32 lastBlockSize;
+    u32 currentBlock;
+    u16 adpcmCoefs[2][16];
+    ndspWaveBuf waveBuf[2][BUFFER_COUNT];
+    ndspAdpcmData adpcmData[2][2];
+    u16 channel[2];
+    u32 activeChannels;
+    u8* bufferData[2][BUFFER_COUNT];
+    volatile bool stop;
+    Thread playingThread;
+} bcstm;
 
 #endif
