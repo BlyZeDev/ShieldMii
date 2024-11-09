@@ -7,5 +7,6 @@ miiData selectMii(void);
 void showError(const char* buffer, ErrorCode code);
 u8 getBatteryPercentage(void);
 bool getChargingState(void);
+systemTime getSystemTime(void);
 
 #endif

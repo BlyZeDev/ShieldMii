@@ -14,7 +14,14 @@
 #include "fs.h"
 #include "ui.h"
 
-void init()
+static void updateScreenInfo(screenInfo* infoPtr)
+{
+    infoPtr->batteryPercentage = getBatteryPercentage();
+    infoPtr->chargingState = getChargingState();
+    infoPtr->curTime = getSystemTime();
+}
+
+static void init()
 {
     osSetSpeedupEnable(false); // Set to true when releasing
 
@@ -31,7 +38,7 @@ void init()
     initUI(getSystemModel() != CFG_MODEL_2DS);
 }
 
-void close()
+static void close()
 {
     exitUI();
 
@@ -56,9 +63,13 @@ int main(int argc, char** argv)
         playBcstm(bgm);
     }
 
+    screenInfo info = {0};
+    updateScreenInfo(&info);
+
     startFrame();
     drawWelcomeScreen();
-    drawBattery(getBatteryPercentage(), getChargingState());
+    drawClock(&info.curTime);
+    drawBattery(info.batteryPercentage, info.chargingState);
     endFrame();
 
     storage curData = {0};
@@ -68,6 +79,8 @@ int main(int argc, char** argv)
     MenuState menuState = MENUSTATE_SELECTMII;
 
     miiData selectedMii;
+
+    u32 frames = 0;
     while (aptMainLoop())
     {
         updateInput();
@@ -75,6 +88,7 @@ int main(int argc, char** argv)
         if (kDown & KEY_START) break;
 
         startFrame();
+        frames++;
 
         switch (appState)
         {
@@ -153,7 +167,13 @@ int main(int argc, char** argv)
             case APPSTATE_MAIN: return 0;
         }
 
-        drawBattery(getBatteryPercentage(), getChargingState());
+        if (frames % 60 == 0)
+        {
+            updateScreenInfo(&info);
+        }
+
+        drawClock(&info.curTime);
+        drawBattery(info.batteryPercentage, info.chargingState);
 
         endFrame();
     }

@@ -69,3 +69,15 @@ bool getChargingState(void)
     PTMU_GetBatteryChargeState(&state);
     return state;
 }
+
+systemTime getSystemTime(void)
+{
+	u64 dayTime = (osGetTime() / 1000) % SECONDS_IN_DAY;
+
+    systemTime curTime;
+	curTime.hour = dayTime / SECONDS_IN_HOUR;
+	curTime.min = (dayTime % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE;
+	curTime.sec = dayTime % SECONDS_IN_MINUTE;
+
+    return curTime;
+}

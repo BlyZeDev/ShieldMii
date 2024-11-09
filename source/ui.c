@@ -107,6 +107,16 @@ void drawBattery(const u8 percentage, const bool isCharging)
     drawText(buffer, C2D_AlignRight, xPos - CONTROL_PADDING, SCREEN_PADDING, 0.5f, 0.5f, TEXT);
 }
 
+void drawClock(const systemTime* timePtr)
+{
+    C2D_SceneBegin(topPtr);
+
+    char buffer[12];
+    snprintf(buffer, 12, "%02d:%02d:%02d", timePtr->hour, timePtr->min, timePtr->sec);
+
+    drawText(buffer, C2D_AlignLeft, SCREEN_PADDING, SCREEN_PADDING, 0.5f, 0.5f, TEXT);
+}
+
 void endFrame(void)
 {
     C2D_Flush();

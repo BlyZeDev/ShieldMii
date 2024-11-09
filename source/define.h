@@ -1,6 +1,10 @@
 #ifndef DEFINE_H
 #define DEFINE_H
 
+#define SECONDS_IN_DAY 86400
+#define SECONDS_IN_HOUR 3600
+#define SECONDS_IN_MINUTE 60
+
 #define TOP_SCREEN_WIDTH 400
 #define BOTTOM_SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -16,7 +20,7 @@
 #define SUCCESS 0xFF71CC2E
 #define ERROR 0xFF3C4CE7
 
-#define GRID_SIZE 4
+#define GRID_SIZE 5
 #define GRID_POINTS GRID_SIZE * GRID_SIZE
 #define CIRCLE_SIZE 80 / GRID_SIZE
 
@@ -50,6 +54,13 @@ typedef enum
     MENUSTATE_SELECTMII = 1 << 0,
     MENUSTATE_INITPASSCODE = 1 << 1
 } MenuState;
+
+typedef struct
+{
+    u8 hour;
+    u8 min;
+    u8 sec;
+} systemTime;
 
 typedef struct
 {
@@ -120,5 +131,12 @@ typedef struct
     volatile bool stop;
     Thread playingThread;
 } bcstm;
+
+typedef struct
+{
+    u8 batteryPercentage;
+    bool chargingState;
+    systemTime curTime;
+} screenInfo;
 
 #endif
