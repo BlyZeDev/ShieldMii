@@ -317,7 +317,7 @@ bcstm* loadBcstm(const char* path)
 
 void playBcstm(bcstm* audioPtr)
 {
-    audioPtr->playingThread = threadCreate(audioThread, audioPtr, 32768, 0x3F, -1, false);
+    audioPtr->playingThread = threadCreate(audioThread, audioPtr, 0x1000, 0x3F, -1, false);
 }
 
 void stopBcstm(bcstm* audioPtr)

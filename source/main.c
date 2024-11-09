@@ -14,14 +14,14 @@
 #include "fs.h"
 #include "ui.h"
 
-static void updateScreenInfo(screenInfo* infoPtr)
+static void updateOverlay(screenOverlay* overlayPtr)
 {
-    infoPtr->batteryPercentage = getBatteryPercentage();
-    infoPtr->chargingState = getChargingState();
-    infoPtr->curTime = getSystemTime();
+    overlayPtr->batteryPercentage = getBatteryPercentage();
+    overlayPtr->chargingState = getChargingState();
+    overlayPtr->curTime = getSystemTime();
 }
 
-static void init()
+static void init(void)
 {
     osSetSpeedupEnable(false); // Set to true when releasing
 
@@ -35,10 +35,12 @@ static void init()
     ptmuInit();
     ndspInit();
 
+    ndspSetOutputMode(NDSP_OUTPUT_SURROUND);
+
     initUI(getSystemModel() != CFG_MODEL_2DS);
 }
 
-static void close()
+static void close(void)
 {
     exitUI();
 
@@ -53,7 +55,7 @@ static void close()
     romfsInit();
 }
 
-int main(int argc, char** argv)
+int main(void)
 {
     init();
 
@@ -63,13 +65,11 @@ int main(int argc, char** argv)
         playBcstm(bgm);
     }
 
-    screenInfo info = {0};
-    updateScreenInfo(&info);
+    screenOverlay overlay = {0};
+    updateOverlay(&overlay);
 
     startFrame();
     drawWelcomeScreen();
-    drawClock(&info.curTime);
-    drawBattery(info.batteryPercentage, info.chargingState);
     endFrame();
 
     storage curData = {0};
@@ -139,43 +139,54 @@ int main(int argc, char** argv)
 
                 if (kDown & KEY_A)
                 {
-                    u8 hashed[PASSCODE_HASH_LENGTH];
-                    hash(code.code, code.codeLength, hashed);
-
-                    if (menuState & MENUSTATE_INITPASSCODE)
+                    if (code.codeLength < GRID_SIZE)
                     {
-                        memcpy(curData.passcodeHash, hashed, sizeof(curData.passcodeHash));
-                        writeMiiFile(selectedMii.id, &curData);
-                        menuState ^= MENUSTATE_INITPASSCODE;
-                        appState = APPSTATE_MAIN;
+                        showError("The passcode is too short!", ERROR_CODE_PASSCODE_TOO_SHORT);
                     }
                     else
                     {
-                        if (memcmp(curData.passcodeHash, hashed, sizeof(curData.passcodeHash)) == 0)
+                        u8 hashed[PASSCODE_HASH_LENGTH];
+                        hash(code.code, code.codeLength, hashed);
+
+                        if (menuState & MENUSTATE_INITPASSCODE)
                         {
+                            memcpy(curData.passcodeHash, hashed, sizeof(curData.passcodeHash));
+                            writeMiiFile(selectedMii.id, &curData);
+                            menuState ^= MENUSTATE_INITPASSCODE;
                             appState = APPSTATE_MAIN;
                         }
                         else
                         {
-                            memset(&code, 0, sizeof(code));
-                            initGrid(code.circles);
+                            if (memcmp(curData.passcodeHash, hashed, sizeof(curData.passcodeHash)) == 0)
+                            {
+                                appState = APPSTATE_MAIN;
+                            }
+                            else
+                            {
+                                memset(&code, 0, sizeof(code));
+                                initGrid(code.circles);
+                                showError("The passcode is wrong!", ERROR_CODE_PASSCODE_WRONG);
+                            }
                         }
                     }
                 }
                 break;
 
-            case APPSTATE_MAIN: return 0;
+            case APPSTATE_MAIN: appState = APPSTATE_TERMINATE; break;
+
+            case APPSTATE_TERMINATE: break;
         }
 
-        if (frames % 60 == 0)
+        if (frames % FPS == 0)
         {
-            updateScreenInfo(&info);
+            updateOverlay(&overlay);
         }
 
-        drawClock(&info.curTime);
-        drawBattery(info.batteryPercentage, info.chargingState);
+        drawOverlay(&overlay);
 
         endFrame();
+
+        if (appState == APPSTATE_TERMINATE) break;
     }
     
     stopBcstm(bgm);

@@ -34,12 +34,35 @@ static point drawText(const char* buffer, const u32 flags, const float x, const 
     return size;
 }
 
+static void drawBattery(const u8 percentage, const bool isCharging)
+{
+    C2D_Image icon = C2D_SpriteSheetGetImage(icons, getBatteryIndex(percentage, isCharging));
+
+    const float xPos = TOP_SCREEN_WIDTH - icon.subtex->width - SCREEN_PADDING;
+
+    C2D_DrawImageAt(icon, xPos, SCREEN_PADDING, 0, NULL, 1.0f, 1.0f);
+
+    char buffer[5];
+    snprintf(buffer, 5, "%u%%", percentage);
+    drawText(buffer, C2D_AlignRight, xPos - CONTROL_PADDING, SCREEN_PADDING, 0.5f, 0.5f, TEXT);
+}
+
+static void drawClock(const systemTime* timePtr)
+{
+    char buffer[9];
+    snprintf(buffer, 9, "%02u:%02u:%02u", timePtr->hour % 24, timePtr->min % 60, timePtr->sec % 60);
+
+    drawText(buffer, C2D_AlignLeft, SCREEN_PADDING, SCREEN_PADDING, 0.5f, 0.5f, TEXT);
+}
+
 void initUI(bool setWide)
 {
     gfxInitDefault();
     C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
     C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
     C2D_Prepare();
+
+    C3D_FrameRate(FPS);
 
     gfxSetWide(setWide);
 
@@ -92,29 +115,12 @@ void drawPasscodeEntry(const circle* circles)
     lastText = drawText("\uE001 Undo", C2D_AlignCenter, TOP_SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3 + lastText.y + CONTROL_PADDING, 1.0f, 1.0f, TEXT);
 }
 
-void drawBattery(const u8 percentage, const bool isCharging)
+void drawOverlay(const screenOverlay* overlayPtr)
 {
     C2D_SceneBegin(topPtr);
 
-    C2D_Image icon = C2D_SpriteSheetGetImage(icons, getBatteryIndex(percentage, isCharging));
-
-    const float xPos = TOP_SCREEN_WIDTH - icon.subtex->width - SCREEN_PADDING;
-
-    C2D_DrawImageAt(icon, xPos, SCREEN_PADDING, 0, NULL, 1.0f, 1.0f);
-
-    char buffer[5];
-    snprintf(buffer, 5, "%u%%", percentage);
-    drawText(buffer, C2D_AlignRight, xPos - CONTROL_PADDING, SCREEN_PADDING, 0.5f, 0.5f, TEXT);
-}
-
-void drawClock(const systemTime* timePtr)
-{
-    C2D_SceneBegin(topPtr);
-
-    char buffer[12];
-    snprintf(buffer, 12, "%02d:%02d:%02d", timePtr->hour, timePtr->min, timePtr->sec);
-
-    drawText(buffer, C2D_AlignLeft, SCREEN_PADDING, SCREEN_PADDING, 0.5f, 0.5f, TEXT);
+    drawClock(&overlayPtr->curTime);
+    drawBattery(overlayPtr->batteryPercentage, overlayPtr->chargingState);
 }
 
 void endFrame(void)

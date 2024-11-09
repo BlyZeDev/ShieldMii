@@ -5,6 +5,8 @@
 #define SECONDS_IN_HOUR 3600
 #define SECONDS_IN_MINUTE 60
 
+#define FPS 60
+
 #define TOP_SCREEN_WIDTH 400
 #define BOTTOM_SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -22,7 +24,7 @@
 
 #define GRID_SIZE 5
 #define GRID_POINTS GRID_SIZE * GRID_SIZE
-#define CIRCLE_SIZE 80 / GRID_SIZE
+#define CIRCLE_SIZE 100 / GRID_SIZE
 
 #define MIN_PASSCODE_LENGTH 4
 
@@ -46,7 +48,8 @@ typedef enum
 {
     APPSTATE_WELCOME = 1,
     APPSTATE_ENTERPASSCODE,
-    APPSTATE_MAIN
+    APPSTATE_MAIN,
+    APPSTATE_TERMINATE
 } AppState;
 
 typedef enum
@@ -137,6 +140,6 @@ typedef struct
     u8 batteryPercentage;
     bool chargingState;
     systemTime curTime;
-} screenInfo;
+} screenOverlay;
 
 #endif
